@@ -1,0 +1,364 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Student Registration</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Nunito:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0f1b35;--navy-mid:#1a2f5a;--navy-light:#243f7a;
+  --gold:#e8b84b;--cream:#fdf8f0;--white:#fff;
+  --text:#1a1a2e;--muted:#6b7280;--border:#e2e4eb;
+  --danger:#e85151;--success:#3da35d;--radius:12px;--radius-sm:8px;
+}
+body{font-family:'Nunito',sans-serif;background:var(--cream);min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;padding:2rem 1rem 4rem;color:var(--text);}
+.page-header{text-align:center;margin-bottom:2.4rem}
+.school-badge{display:inline-flex;align-items:center;gap:10px;background:var(--navy);
+  color:var(--gold);padding:8px 20px;border-radius:40px;font-size:12px;font-weight:600;
+  letter-spacing:.12em;text-transform:uppercase;margin-bottom:1rem}
+.school-badge span{width:6px;height:6px;border-radius:50%;background:var(--gold);display:inline-block}
+.page-header h1{font-family:'Playfair Display',serif;font-size:clamp(28px,5vw,42px);color:var(--navy);line-height:1.15}
+.page-header p{margin-top:8px;font-size:15px;color:var(--muted)}
+.page-header a{color:var(--navy-light);font-weight:600;text-decoration:none}
+.card{background:var(--white);border-radius:20px;
+  box-shadow:0 4px 40px rgba(15,27,53,.09),0 1px 4px rgba(15,27,53,.05);
+  width:100%;max-width:740px;overflow:hidden}
+.form-section{padding:2rem 2.5rem;border-bottom:1px solid var(--border)}
+.form-section:last-of-type{border-bottom:none}
+.section-label{display:flex;align-items:center;gap:10px;margin-bottom:1.4rem}
+.section-num{width:28px;height:28px;background:var(--navy);color:var(--gold);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.section-title{font-family:'Playfair Display',serif;font-size:18px;color:var(--navy)}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:12px;font-weight:600;color:var(--navy-mid);
+  text-transform:uppercase;letter-spacing:.07em}
+.field label .req{color:var(--gold);margin-left:2px}
+.field input,.field select{padding:11px 14px;border:1.5px solid var(--border);
+  border-radius:var(--radius-sm);font-family:'Nunito',sans-serif;font-size:14px;
+  color:var(--text);background:#fafbfc;outline:none;
+  transition:border-color .18s,box-shadow .18s;width:100%}
+.field input:focus,.field select:focus{border-color:var(--navy-light);background:#fff;
+  box-shadow:0 0 0 3px rgba(36,63,122,.1)}
+.field .err-msg{font-size:11px;color:var(--danger);display:none;margin-top:2px}
+.field.has-error .err-msg{display:block}
+.field.has-error input,.field.has-error select{border-color:var(--danger)}
+.pass-wrap{position:relative}
+.pass-wrap input{padding-right:44px}
+.pass-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;padding:0;color:var(--muted);font-size:18px}
+.strength-row{display:flex;gap:4px;margin-top:6px}
+.seg{flex:1;height:3px;border-radius:2px;background:var(--border);transition:background .3s}
+.seg.w{background:#e85151}.seg.m{background:#f5a623}.seg.s{background:#3da35d}
+.strength-text{font-size:11px;margin-top:4px;font-weight:600}
+.photo-upload{display:flex;align-items:center;gap:20px}
+.photo-preview{width:88px;height:88px;border-radius:50%;border:2.5px dashed var(--navy-light);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+  background:#f0f4ff;flex-shrink:0;cursor:pointer}
+.photo-preview img{width:100%;height:100%;object-fit:cover;display:none}
+.photo-btn{margin-top:8px;display:inline-block;padding:7px 16px;background:var(--navy);
+  color:var(--gold);border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;
+  border:none;font-family:'Nunito',sans-serif}
+.gender-group{display:flex;gap:10px;flex-wrap:wrap}
+.gender-opt{display:none}
+.gender-opt+label{display:flex;align-items:center;gap:7px;padding:9px 18px;
+  border:1.5px solid var(--border);border-radius:30px;font-size:13px;font-weight:500;
+  cursor:pointer;color:var(--muted);background:#fafbfc;transition:all .15s}
+.gender-opt:checked+label{border-color:var(--navy-light);background:#eef2ff;color:var(--navy);font-weight:600}
+.toggle-switch{position:relative;width:44px;height:24px}
+.toggle-switch input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:var(--border);border-radius:24px;cursor:pointer;transition:background .2s}
+.toggle-slider::before{content:'';position:absolute;left:3px;top:3px;width:18px;height:18px;
+  border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+.toggle-switch input:checked~.toggle-slider{background:var(--navy)}
+.toggle-switch input:checked~.toggle-slider::before{transform:translateX(20px)}
+.parent-fields{display:none}.parent-fields.visible{display:block}
+.terms-row{display:flex;align-items:flex-start;gap:10px;padding:0 2.5rem 1.5rem}
+.terms-row input[type=checkbox]{margin-top:2px;width:16px;height:16px;accent-color:var(--navy)}
+.terms-row span{font-size:13px;color:var(--muted);line-height:1.6}
+.terms-row a{color:var(--navy-light);font-weight:600;text-decoration:none}
+.submit-area{padding:0 2.5rem 2.5rem}
+.btn-submit{width:100%;padding:15px;background:var(--navy);color:var(--gold);border:none;
+  border-radius:var(--radius);font-family:'Playfair Display',serif;font-size:17px;
+  font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;
+  box-shadow:0 4px 20px rgba(15,27,53,.22);transition:background .18s,transform .1s}
+.btn-submit:hover{background:var(--navy-mid)}
+.btn-submit:active{transform:scale(.99)}
+.success-msg{display:none;margin:0 2.5rem 1.5rem;padding:14px 16px;
+  background:#eaf3de;border:1px solid #97c459;border-radius:10px;
+  font-size:14px;color:#3b6d11;font-weight:600}
+.success-msg.show{display:block}
+@media(max-width:600px){
+  .form-section{padding:1.5rem 1.25rem}
+  .grid-2,.grid-3{grid-template-columns:1fr}
+  .terms-row,.submit-area{padding-left:1.25rem;padding-right:1.25rem}
+}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="school-badge"><span></span> Academic Portal <span></span></div>
+  <h1>Student Registration</h1>
+  <p>Already registered? <a href="#">Sign in here</a></p>
+</div>
+
+<div class="card">
+  <form id="regForm" novalidate>
+
+    <div class="form-section">
+      <div class="section-label">
+        <div class="section-num">1</div>
+        <span class="section-title">Profile Photo</span>
+      </div>
+      <div class="photo-upload">
+        <div class="photo-preview" id="photoPreview" onclick="document.getElementById('photoInput').click()">
+          <img id="photoImg" src="" alt="Preview" />
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="#243f7a" id="photoIcon">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
+          </svg>
+        </div>
+        <div>
+          <p style="font-size:14px;font-weight:500;color:var(--navy)">Upload a profile photo</p>
+          <span style="font-size:12px;color:var(--muted)">JPG, PNG — max 2MB</span><br/>
+          <button type="button" class="photo-btn" onclick="document.getElementById('photoInput').click()">Choose Photo</button>
+        </div>
+        <input type="file" id="photoInput" accept="image/*" onchange="previewPhoto(this)" style="display:none" />
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="section-label">
+        <div class="section-num">2</div>
+        <span class="section-title">Personal Information</span>
+      </div>
+      <div class="grid-2">
+        <div class="field" id="f-fullname">
+          <label>Full name <span class="req">*</span></label>
+          <input type="text" id="fullname" placeholder="e.g. Aryan Sharma" />
+          <span class="err-msg">Please enter your full name</span>
+        </div>
+        <div class="field" id="f-email">
+          <label>Email address <span class="req">*</span></label>
+          <input type="email" id="email" placeholder="you@example.com" />
+          <span class="err-msg">Enter a valid email address</span>
+        </div>
+        <div class="field" id="f-phone">
+          <label>Phone number <span class="req">*</span></label>
+          <input type="tel" id="phone" placeholder="+91 98765 43210" />
+          <span class="err-msg">Enter a valid phone number</span>
+        </div>
+        <div class="field">
+          <label>Date of birth</label>
+          <input type="date" id="dob" />
+        </div>
+      </div>
+      <div class="field" style="margin-top:16px">
+        <label>Gender <span class="req">*</span></label>
+        <div class="gender-group">
+          <input type="radio" name="gender" id="gm" value="male" class="gender-opt"/>
+          <label for="gm">Male</label>
+          <input type="radio" name="gender" id="gf" value="female" class="gender-opt"/>
+          <label for="gf">Female</label>
+          <input type="radio" name="gender" id="go" value="other" class="gender-opt"/>
+          <label for="go">Prefer not to say</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="section-label">
+        <div class="section-num">3</div>
+        <span class="section-title">Academic Details</span>
+      </div>
+      <div class="grid-3">
+        <div class="field" id="f-grade">
+          <label>Class / Grade <span class="req">*</span></label>
+          <select id="grade">
+            <option value="">Select grade</option>
+            <option>Grade 1</option><option>Grade 2</option><option>Grade 3</option>
+            <option>Grade 4</option><option>Grade 5</option><option>Grade 6</option>
+            <option>Grade 7</option><option>Grade 8</option><option>Grade 9</option>
+            <option>Grade 10</option><option>Grade 11</option><option>Grade 12</option>
+          </select>
+          <span class="err-msg">Please select a grade</span>
+        </div>
+        <div class="field">
+          <label>Section</label>
+          <select>
+            <option value="">Select section</option>
+            <option>A</option><option>B</option><option>C</option><option>D</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Roll number</label>
+          <input type="text" placeholder="e.g. 42" />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="section-label">
+        <div class="section-num">4</div>
+        <span class="section-title">Set Password</span>
+      </div>
+      <div class="grid-2">
+        <div class="field" id="f-password">
+          <label>Password <span class="req">*</span></label>
+          <div class="pass-wrap">
+            <input type="password" id="password" placeholder="Min. 8 characters" oninput="checkStrength(this.value)" />
+            <button type="button" class="pass-eye" onclick="togglePass('password')">👁</button>
+          </div>
+          <div class="strength-row">
+            <div class="seg" id="s1"></div><div class="seg" id="s2"></div>
+            <div class="seg" id="s3"></div><div class="seg" id="s4"></div>
+          </div>
+          <span class="strength-text" id="strengthText"></span>
+          <span class="err-msg">Password must be at least 8 characters</span>
+        </div>
+        <div class="field" id="f-confirm">
+          <label>Confirm password <span class="req">*</span></label>
+          <div class="pass-wrap">
+            <input type="password" id="confirm" placeholder="Re-enter password" />
+            <button type="button" class="pass-eye" onclick="togglePass('confirm')">👁</button>
+          </div>
+          <span class="err-msg">Passwords do not match</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="section-label">
+        <div class="section-num">5</div>
+        <span class="section-title">Parent / Guardian Details</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.2rem">
+        <label class="toggle-switch">
+          <input type="checkbox" id="parentToggle" onchange="toggleParent()" />
+          <span class="toggle-slider"></span>
+        </label>
+        <span style="font-size:14px;font-weight:500;color:var(--navy)">Add parent / guardian information</span>
+      </div>
+      <div class="parent-fields" id="parentFields">
+        <div class="grid-2" style="margin-bottom:14px">
+          <div class="field">
+            <label>Parent full name</label>
+            <input type="text" placeholder="e.g. Rajesh Sharma" />
+          </div>
+          <div class="field">
+            <label>Relationship</label>
+            <select>
+              <option value="">Select</option>
+              <option>Father</option><option>Mother</option>
+              <option>Guardian</option><option>Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Parent email</label>
+            <input type="email" placeholder="parent@example.com" />
+          </div>
+          <div class="field">
+            <label>Parent phone</label>
+            <input type="tel" placeholder="+91 98765 00000" />
+          </div>
+        </div>
+        <div class="field">
+          <label>Home address</label>
+          <input type="text" placeholder="Street, City, State, Pincode" />
+        </div>
+      </div>
+    </div>
+
+    <div class="terms-row">
+      <input type="checkbox" id="terms" />
+      <span>I confirm that the information provided is accurate and I agree to the
+        <a href="#">Terms &amp; Conditions</a> and <a href="#">Privacy Policy</a>.</span>
+    </div>
+
+    <div class="success-msg" id="successMsg">
+      ✅ Registration successful! Check your email for a verification link.
+    </div>
+
+    <div class="submit-area">
+      <button type="submit" class="btn-submit">✦ Create My Account</button>
+    </div>
+
+  </form>
+</div>
+
+<script>
+function previewPhoto(input){
+  if(!input.files||!input.files[0])return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const img=document.getElementById('photoImg');
+    const icon=document.getElementById('photoIcon');
+    img.src=e.target.result;img.style.display='block';icon.style.display='none';
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+function togglePass(id){
+  const inp=document.getElementById(id);
+  inp.type=inp.type==='password'?'text':'password';
+}
+function checkStrength(val){
+  const segs=['s1','s2','s3','s4'].map(id=>document.getElementById(id));
+  const text=document.getElementById('strengthText');
+  segs.forEach(s=>{s.className='seg'});
+  if(!val){text.textContent='';return;}
+  let score=0;
+  if(val.length>=8)score++;
+  if(/[A-Z]/.test(val))score++;
+  if(/[0-9]/.test(val))score++;
+  if(/[^A-Za-z0-9]/.test(val))score++;
+  const levels=[{cls:'w',label:'Weak',color:'#e85151'},{cls:'m',label:'Fair',color:'#f5a623'},
+    {cls:'s',label:'Good',color:'#3da35d'},{cls:'s',label:'Strong',color:'#1d9e75'}];
+  const lvl=levels[score-1]||levels[0];
+  for(let i=0;i<score;i++)segs[i].classList.add(lvl.cls);
+  text.textContent=lvl.label;text.style.color=lvl.color;
+}
+function toggleParent(){
+  const chk=document.getElementById('parentToggle');
+  document.getElementById('parentFields').classList.toggle('visible',chk.checked);
+}
+function setError(id,show){
+  const el=document.getElementById('f-'+id);
+  if(el)el.classList.toggle('has-error',show);
+}
+document.getElementById('regForm').addEventListener('submit',function(e){
+  e.preventDefault();
+  let ok=true;
+  const fn=document.getElementById('fullname').value.trim();
+  const em=document.getElementById('email').value.trim();
+  const ph=document.getElementById('phone').value.trim();
+  const gr=document.getElementById('grade').value;
+  const pw=document.getElementById('password').value;
+  const cf=document.getElementById('confirm').value;
+  const terms=document.getElementById('terms').checked;
+  setError('fullname',!fn);if(!fn)ok=false;
+  setError('email',!em||!/\S+@\S+\.\S+/.test(em));if(!em||!/\S+@\S+\.\S+/.test(em))ok=false;
+  setError('phone',!ph||ph.replace(/\D/g,'').length<7);if(!ph||ph.replace(/\D/g,'').length<7)ok=false;
+  setError('grade',!gr);if(!gr)ok=false;
+  setError('password',pw.length<8);if(pw.length<8)ok=false;
+  const cf_field=document.getElementById('f-confirm');
+  if(!cf||pw!==cf){cf_field.classList.add('has-error');ok=false;}
+  else cf_field.classList.remove('has-error');
+  if(!terms){alert('Please agree to the Terms & Conditions.');ok=false;}
+  if(ok){
+    document.getElementById('successMsg').classList.add('show');
+    document.getElementById('regForm').reset();
+    document.getElementById('photoImg').style.display='none';
+    document.getElementById('photoIcon').style.display='';
+    ['s1','s2','s3','s4'].forEach(id=>document.getElementById(id).className='seg');
+    document.getElementById('strengthText').textContent='';
+    document.getElementById('parentFields').classList.remove('visible');
+    setTimeout(()=>document.getElementById('successMsg').classList.remove('show'),5000);
+  }
+});
+</script>
+</body>
+</html>
