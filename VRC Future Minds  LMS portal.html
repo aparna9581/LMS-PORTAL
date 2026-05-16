@@ -845,11 +845,11 @@ footer { background: var(--dark2); border-top: 1px solid var(--card-border); pad
     </div>
     <div class="form-group">
       <label class="form-label">Username / Email</label>
-      <input class="form-input" type="text" placeholder="Enter your email or username">
+      <input class="form-input" type="text" id="loginEmail" placeholder="Enter your email or username">
     </div>
     <div class="form-group">
       <label class="form-label">Password</label>
-      <input class="form-input" type="password" placeholder="Enter your password">
+      <input class="form-input" type="password" id="loginPassword" placeholder="Enter your password">
       <div class="form-forgot">Forgot Password?</div>
     </div>
     <button class="login-btn" onclick="doLogin()">Sign In →</button>
@@ -1154,13 +1154,28 @@ function selectRole(el, role) {
   currentRole = role;
 }
 function doLogin() {
-  const names = { student: 'Arjun Kumar', teacher: 'Priya Sharma', parent: 'Ramesh Reddy', admin: 'Admin User' };
-  const emails = { student: 'arjun@vrc.edu', teacher: 'priya@vrc.edu', parent: 'ramesh@parent.vrc', admin: 'admin@vrc.edu' };
-  currentUser = { name: names[currentRole], email: emails[currentRole], role: currentRole };
-  closeLogin();
-  document.getElementById('landing').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  initApp();
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  if(!email || !password){ alert('Please enter email and password!'); return; }
+  fetch('https://vrc-lms-backend.onrender.com/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if(data.token){
+      localStorage.setItem('token', data.token);
+      currentUser = { name: email.split('@')[0], email: email, role: currentRole };
+      closeLogin();
+      document.getElementById('landing').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      initApp();
+    } else {
+      alert(data.message || 'Login failed!');
+    }
+  })
+  .catch(err => alert('Server error! Make sure backend is running.'));
 }
 function demoAccess() {
   currentRole = 'student';

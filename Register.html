@@ -349,7 +349,20 @@ document.getElementById('regForm').addEventListener('submit',function(e){
   else cf_field.classList.remove('has-error');
   if(!terms){alert('Please agree to the Terms & Conditions.');ok=false;}
   if(ok){
-    document.getElementById('successMsg').classList.add('show');
+    fetch('https://vrc-lms-backend.onrender.com/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: fn,
+        email: em,
+        password: pw,
+        role: 'student'
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if(data.message === 'Registered successfully'){
+        document.getElementById('successMsg').classList.add('show');
     document.getElementById('regForm').reset();
     document.getElementById('photoImg').style.display='none';
     document.getElementById('photoIcon').style.display='';
